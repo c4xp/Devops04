@@ -26,6 +26,12 @@ Core components of this repository: Jenkins, Docker, Rancher
 
 ## Installation on Synology
 
+![Synology-diskstation](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/diskstation-ds220j.png)
+
+Installing Docker onto a Synology NAS is the normal click click click sort of workflow.
+
+![Docker-pkg](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/docker-pkg.png)
+
 ### Step 1: Prepare Synology
 
 The first thing to do is to enable SSH login on Diskstation. To do this, go to the “Control Panel” > “Terminal”
@@ -82,9 +88,19 @@ I can also make good use of the console in this step. I start the Jenkins server
 sudo docker-compose up -d
 ```
 
+![Synology-docker](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/synology-docker.png)
+
 After that I can call my Jenkins server with the IP of the diskstation and the assigned port from “Step 2”. 
 
 ![Jenkins-login](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/jenkins-login.png)
+
+Enter the password that we captured from the file at /var/jenkins_home/secrets/initialAdminPassword after installing Jenkins.
+
+![Jenkins-initial](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/jenkins-initial.png)
+
+I recommend just installing the recommended plugins first up. You can always add or remove plugins later.
+
+![Jenkins-plugins](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/jenkins-plugins.png)
 
 ![Questions](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/questions.png)
 
