@@ -1,7 +1,7 @@
 ---
 - hosts: "masters, workers"
   become: yes
-  vars_files: secret.yml
+  vars_files: vault.yml
   #vars:
     #new_user_name: johndoe
 
@@ -196,7 +196,7 @@
 
     - name: set up authorized keys for the new user
       authorized_key:
-        user: {{ new_user_name }}
+        user: "{{ new_user_name }}"
         state: present
         key: "{{ new_user_publickey }}"
 
