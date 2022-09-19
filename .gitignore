@@ -7,15 +7,15 @@ app/application/cache/*
 
 app/application/sessions/*
 app/error.log
-app/cfg.php
 
 app/application/logs/*
 app/application/vendor/*
 !app/application/logs/index.html
 !app/application/logs/.htaccess
-.vscode
 
-/public_html/pictures/*
+/ansible/vault.yml
+/ansible/.vault_pass
+.vscode
 /nbproject/
 .idea/*
 /composer.lock

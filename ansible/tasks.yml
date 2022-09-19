@@ -1,20 +1,14 @@
 ---
 - hosts: "masters, workers"
   become: yes
-  # ansible-playbook .. --extra-vars "new_user_name=johndoe new_user_salt=S4ltsha256H4sh00"
+  vars_files: secret.yml
   #vars:
     #new_user_name: johndoe
 
   tasks:
-    - name: User debug
-      debug: msg="User {{ new_user_name }}"
-
-    - name: Generate password for new user
-      shell: openssl rand -base64 12
-      register: user_password
-
     - name: Generate encrypted password
-      shell: openssl passwd -salt {{ new_user_salt }} -5 {{ user_password.stdout }}
+      shell: openssl passwd -salt {{ new_user_salt }} -5 {{ new_user_pass }}
+      changed_when: false
       register: encrypted_user_password
 
     - name: Gather package facts
@@ -114,28 +108,21 @@
           - software-properties-common
         state: present
 
-    - name: Add Docker official GPG key
-      apt_key:
-        url: "https://download.docker.com/linux/{{ansible_distribution|lower}}/gpg"
-        state: present
+    - name: Download Docker GPG key
+      get_url:
+        url: https://download.docker.com/linux/{{ansible_distribution|lower}}/gpg
+        dest: /tmp/dockergpg
+        # curl -sL https://download.docker.com/linux/ubuntu/gpg|sha256sum
+        checksum: sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570
+
+    - name: De-Armor Docker GPG key
+      shell: "cat /tmp/dockergpg | gpg --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
+      changed_when: false
 
     - name: Add Docker APT repository
       apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/{{ansible_distribution|lower}} {{ansible_distribution_release}} stable
-
-    - name: Add Docker official GPG key
-      become: yes
-      apt_key:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/{{ansible_distribution|lower}} {{ansible_distribution_release}} stable"
         state: present
-        keyserver: "https://download.docker.com/linux/{{ansible_distribution|lower}}/gpg"
-        id: 7EA0A9C3F273FCD8
-
-    - name: check Docker apt key has not been altered
-      become: yes
-      command: apt-key fingerprint 0EBFCD88
-      register: fingerprint_check
-      changed_when: False
-      failed_when: "'9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88' not in fingerprint_check.stdout"
 
     - name: Install Docker packages
       apt:
@@ -207,11 +194,11 @@
         - { path: "/home/{{ new_user_name }}/.ssh", mode: "0700" }
         - { path: "/home/{{ new_user_name }}", mode: "0700" }
 
-    - name: set up authorized keys for the rke user
+    - name: set up authorized keys for the new user
       authorized_key:
-        user: rke
+        user: {{ new_user_name }}
         state: present
-        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+        key: "{{ new_user_publickey }}"
 
     - name: Remove snapd from Ubuntu
       apt:
