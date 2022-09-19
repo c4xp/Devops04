@@ -1,0 +1,255 @@
+---
+- hosts: "masters, workers"
+  become: yes
+  # ansible-playbook .. --extra-vars "new_user_name=johndoe new_user_salt=S4ltsha256H4sh00"
+  #vars:
+    #new_user_name: johndoe
+
+  tasks:
+    - name: User debug
+      debug: msg="User {{ new_user_name }}"
+
+    - name: Generate password for new user
+      shell: openssl rand -base64 12
+      register: user_password
+
+    - name: Generate encrypted password
+      shell: openssl passwd -salt {{ new_user_salt }} -5 {{ user_password.stdout }}
+      register: encrypted_user_password
+
+    - name: Gather package facts
+      package_facts:
+        manager: auto
+
+    - name: Gather service facts
+      service_facts:
+
+    - name: Upgrade all packages on servers
+      apt:
+        upgrade: "yes"
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 86400
+
+    - name: Remove 
+      apt:
+        name:
+          - modemmanager
+        state: absent
+
+    - name: disable services
+      service:
+        name: "{{ item }}"
+        enabled: false
+        state: stopped
+      when: "item in services"
+      with_items:
+        - "ubuntu-advantage.service"
+
+    - name: Remove useless packages from the cache
+      apt:
+        autoclean: yes
+
+    - name: Remove dependencies that are no longer required
+      apt:
+        autoremove: yes
+
+    - name: Setup passwordless sudo
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^%sudo'
+        line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: set Timezone to UTC
+      file:
+        src: /usr/share/zoneinfo/Etc/UTC
+        dest: /etc/localtime
+        state: link
+
+    - name: Set NTP Server to pfSense
+      lineinfile:
+        dest: "/etc/systemd/timesyncd.conf"
+        regexp: "^.NTP="
+        line: "NTP=192.168.0.1"
+
+    - name: Start and enable systemd-timesyncd
+      service:
+        name: systemd-timesyncd.service
+        enabled: yes
+        state: started
+
+    - name: Disable (mask) automatic updates
+      systemd:
+        name: packagekit.service
+        masked: yes
+
+    - name: "Disable root login via SSH"
+      lineinfile:
+        dest: "/etc/ssh/sshd_config"
+        regexp: "^PermitRootLogin"
+        line: "PermitRootLogin no"
+      notify: "Restart sshd"
+
+    - name: Remove swapfile from /etc/fstab
+      mount:
+        name: "{{ item }}"
+        fstype: swap
+        state: absent
+      with_items:
+        - swap
+
+    - name: Installing prerequisites for Kubernetes
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - gnupg2
+          - ntpdate
+          - lm-sensors
+          - thermald
+          - software-properties-common
+        state: present
+
+    - name: Add Docker official GPG key
+      apt_key:
+        url: "https://download.docker.com/linux/{{ansible_distribution|lower}}/gpg"
+        state: present
+
+    - name: Add Docker APT repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/{{ansible_distribution|lower}} {{ansible_distribution_release}} stable
+
+    - name: Add Docker official GPG key
+      become: yes
+      apt_key:
+        state: present
+        keyserver: "https://download.docker.com/linux/{{ansible_distribution|lower}}/gpg"
+        id: 7EA0A9C3F273FCD8
+
+    - name: check Docker apt key has not been altered
+      become: yes
+      command: apt-key fingerprint 0EBFCD88
+      register: fingerprint_check
+      changed_when: False
+      failed_when: "'9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88' not in fingerprint_check.stdout"
+
+    - name: Install Docker packages
+      apt:
+        name: 
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+
+    - name: Configure the Bridge Network for Docker preventing network holdup at boot
+      copy:
+        content: '{"bip":"172.17.0.1/16"}'
+        dest: /etc/docker/daemon.json
+        force: no
+
+    - name: start and enable docker daemon
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create a empty file for kubernetes sysctl params
+      copy:
+        content: ""
+        dest: /etc/sysctl.d/kubernetes.conf
+        force: no
+
+    - name: Configure sysctl params for Kubernetes
+      lineinfile:
+        path: /etc/sysctl.d/kubernetes.conf
+        line: "{{ item }}"
+      with_items:
+        - "net.bridge.bridge-nf-call-iptables=1"
+        - "net.bridge.bridge-nf-call-ip6tables=1"
+        - "net.bridge.bridge-nf-call-arptables=1"
+        - "net.ipv4.ip_forward=1"
+        - "net.ipv4.conf.default.rp_filter=1"
+        - "net.ipv4.conf.all.rp_filter=1"
+        - "net.ipv4.conf.lo.arp_filter=0"
+
+    - name: Apply sysctl params without reboot.
+      command: sysctl --system
+      failed_when: false
+      changed_when: false
+
+    - name: create the kubernetes cluster user
+      user:
+        name: "{{ new_user_name }}"
+        state: present
+        createhome: yes
+        groups:
+        - docker
+        - sudo
+        append: true
+        shell: /bin/bash
+        password: "{{ encrypted_user_password.stdout }}"
+      register: user_created
+
+    - name: User created
+      debug: msg="Password changed for {{ new_user_name }} to {{ encrypted_user_password.stdout }}"
+      when: user_created.changed
+
+    - name: Change file ownership, group and permissions
+      file:
+        path: "{{ item.path }}"
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: "/home/{{ new_user_name }}/.ssh/authorized_keys", mode: "0600" }
+        - { path: "/home/{{ new_user_name }}/.ssh", mode: "0700" }
+        - { path: "/home/{{ new_user_name }}", mode: "0700" }
+
+    - name: set up authorized keys for the rke user
+      authorized_key:
+        user: rke
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+    - name: Remove snapd from Ubuntu
+      apt:
+        name: snapd
+        state: absent
+        purge: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Remove snapd-related directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /snap
+        - /var/snap
+        - /var/lib/snapd
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Configure Thermald
+      copy:
+        content: "<ThermalConfiguration><Platform><Name>Overide CPU default passive</Name><ProductName>*</ProductName><Preference>QUIET</Preference><ThermalZones><ThermalZone><Type>cpu</Type><TripPoints><TripPoint><SensorType>acpitz</SensorType><Temperature>60000</Temperature><type>passive</type></TripPoint></TripPoints></ThermalZone></ThermalZones></Platform></ThermalConfiguration>"
+        dest: /etc/thermald/thermal-conf.xml
+        force: no
+
+    - name: Start & Enable thermald Service
+      service:
+        name: "thermald.service"
+        state: "started"
+        enabled: true
+
+    - name: Start & Enable fstrim Timer
+      service:
+        name: "fstrim.timer"
+        state: "started"
+        enabled: true
+
+    - name: Forwarding IPv4 and letting iptables see bridged traffic
+      copy:
+        content: "overlay\nbr_netfilter\n"
+        dest: /etc/modules-load.d/k8s.conf
+        force: no
