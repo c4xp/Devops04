@@ -1,0 +1,55 @@
+pipeline{
+    agent any
+    stages{
+        stage('Source code'){
+            steps{
+                git branch: 'main', credentialsId: '000-github-ssh-SSH-Username-with-private-key', url: 'git@github.com:c4xp/Devops04.git'
+            }
+        }
+        
+        stage('Setup Machines'){
+            steps{
+                withCredentials([usernamePassword(credentialsId: '000-workers-ssh-Username-with-password', usernameVariable: 'SSH_USERNAME', passwordVariable: 'SSH_PASSWORD')]) {
+                    sh '''#!/bin/bash
+ansible --version
+cd ${WORKSPACE}/ansible
+sed -i -e "s~#worker1~10.0.0.8~" inventory
+sed -i -e "s~#worker2~10.0.0.9~" inventory
+sed -i -e "s~#worker3~10.0.0.10~" inventory
+sed -i -e "s~.*ansible_ssh_user.*~ansible_ssh_user: ${SSH_USERNAME}~" secret.yml
+sed -i -e "s~.*ansible_ssh_pass.*~ansible_ssh_pass: ${SSH_PASSWORD}~" secret.yml
+'''
+                }
+                
+                withCredentials([string(credentialsId: '000-new-kubernetes-publickey-Secret-text', variable: 'NEW_PUBLICKEY')]) {
+                    sh '''#!/bin/bash
+cd ${WORKSPACE}/ansible
+sed -i -e "s~.*new_user_publickey.*~new_user_publickey: \\"${NEW_PUBLICKEY}\\"~" secret.yml
+'''
+                }
+                
+                withCredentials([usernamePassword(credentialsId: '000-new-kubernetes-user-Username-with-password', usernameVariable: 'NEW_USERNAME', passwordVariable: 'NEW_PASSWORD')]) {
+                    sh '''#!/bin/bash
+cd ${WORKSPACE}/ansible
+sed -i -e "s~.*new_user_name.*~new_user_name: ${NEW_USERNAME}~" secret.yml
+sed -i -e "s~.*new_user_pass.*~new_user_pass: ${NEW_PASSWORD}~" secret.yml
+cp secret.yml vault.yml
+rm -f secret.yml
+'''
+                }
+            }
+        }
+        
+        stage('Encrypt Vault'){
+            steps {
+                ansibleVault installation: 'ansible', action: 'encrypt', input: 'ansible/vault.yml', vaultCredentialsId: '000-ansible-vault-file-Secret-file'
+            }
+        }
+        
+        stage('Run Ansible'){
+            steps {
+                ansiblePlaybook installation: 'ansible', inventory: 'ansible/inventory', playbook: 'ansible/tasks.yml', vaultCredentialsId: '000-ansible-vault-file-Secret-file'
+            }
+        }
+    }
+}
