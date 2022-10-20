@@ -5,6 +5,8 @@ title: Devops04
 subTitle: Comenzi Git
 ---
 
+![Git workflow](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/devops04git00.png)
+
 # Some Git good practices
 
 Need a `git --version --build-options` first.
@@ -201,4 +203,4 @@ git remote -v
 
 ![Questions](https://raw.githubusercontent.com/c4xp/Devops01/master/assets/questions.png)
 
-[Recap→](recap.md)
+[Manual deployment→](manual.md)

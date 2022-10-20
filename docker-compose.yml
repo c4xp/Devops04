@@ -1,14 +1,11 @@
-version: '2.0'
+version: '3.3'
 services:
-  jenkins:
-    image: jenkins/jenkins:lts
-    privileged: true
-    user: root
+  myapp:
+    container_name: myapp
+    build:
+      context: ./
+      args:
+      - PORT=${PORT}
+    image: myapp:v1.0
     ports:
-      - 8081:8080
-    container_name: jenkins
-    volumes:
-      - jenkins_data:/var/jenkins_home
-volumes:
-  jenkins_data:
-    driver: local
+      - 80:${PORT}

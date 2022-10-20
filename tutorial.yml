@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tutorial-lb
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    com.docker.project: tutorial
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    com.docker.project: tutorial
+  name: tutorial-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      com.docker.project: tutorial
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1 #the maximum number of pods that can be created over the desired number of pods
+      maxUnavailable: 1 #the maximum number of pods that can be unavailable during the update process
+  template:
+    metadata:
+      labels:
+        com.docker.project: tutorial
+    spec:
+      containers:
+      - image: monachus/rancher-demo:latest
+        name: tutorial
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+      restartPolicy: Always

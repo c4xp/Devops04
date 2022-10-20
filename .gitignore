@@ -23,3 +23,4 @@ app/application/vendor/*
 /supervisord.pid
 /kube/
 /cookies.txt
+*.drawio
