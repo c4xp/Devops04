@@ -21,6 +21,5 @@ app/application/vendor/*
 /composer.lock
 /supervisord.log
 /supervisord.pid
-/kube/
 /cookies.txt
 *.drawio

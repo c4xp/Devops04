@@ -19,7 +19,7 @@ metadata:
     com.docker.project: tutorial
   name: tutorial-dep
 spec:
-  replicas: 1
+  replicas: 12
   selector:
     matchLabels:
       com.docker.project: tutorial

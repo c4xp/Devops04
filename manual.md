@@ -84,7 +84,7 @@ kubectl version --client
 `Imperative programming` is a paradigm that describes computation in terms of statements that describe How To change the system state (programming commands or mathematical assertions).
 
 ```
-kubectl config view
+kubectl config view --minify
 kubectl config get-contexts
 kubectl config current-context
 kubectl config use-context <my-cluster>
@@ -94,13 +94,14 @@ kubectl config set-context --current --namespace=<my-namespace>
 Get commands with basic output
 
 ```
-kubectl get nodes
-kubectl get services
-kubectl get pods --all-namespaces
-kubectl get pods -o wide
-kubectl get deployment <my-deployment>
-kubectl get pods
-kubectl get pod <my-pod> -o yaml
+kubectl get nodes # or no
+kubectl get services # or svc
+kubectl get pods # or po
+kubectl get po --all-namespaces
+kubectl get po -o wide
+kubectl get po <my-pod> -o yaml
+kubectl get deployment # or deploy
+kubectl get deploy <my-deployment>
 ```
 
 ## Declarative and Infrastructure as Code

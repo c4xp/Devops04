@@ -1,5 +1,8 @@
 # Devops04 - Jenkins and Kubernetes
 
+[![HitCount](https://hits.dwyl.com/c4xp/Devops04.svg?style=flat)](http://hits.dwyl.com/c4xp/Devops04)
+[![DockerStars](https://img.shields.io/docker/stars/c4xp/myapp.svg?style=flat)](https://img.shields.io/docker/stars/c4xp/myapp)
+
 ## Introduction
 
 [English](/README.md) | [Romana](/README-ro.md)

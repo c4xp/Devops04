@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # kubectl config current-context
+  name: myapp-configmap
+  # kubectl config set-context docker-desktop --namespace=my-namespace
+  namespace: my-namespace
+data:
+  PORT: 8080
