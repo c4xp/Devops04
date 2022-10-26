@@ -101,9 +101,18 @@ Enter the password that we captured from the file at /var/jenkins_home/secrets/i
 
 ![Jenkins-initial](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/jenkins-initial.png)
 
+## Plugins
+
 I recommend just installing the recommended plugins first up. You can always add or remove plugins later.
 
 ![Jenkins-plugins](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/jenkins-plugins.png)
+
+Some other plugins I use:
+[Git parameter](https://plugins.jenkins.io/git-parameter)
+[AnsiColor](https://plugins.jenkins.io/ansicolor)
+[Build with Parameters](https://plugins.jenkins.io/build-with-parameters)
+[Github](https://plugins.jenkins.io/github)
+[Kubernetes Credentials](https://plugins.jenkins.io/kubernetes-credentials)
 
 ![Questions](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/questions.png)
 
