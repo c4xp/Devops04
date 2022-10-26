@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  namespace: myapp-namespace
+  labels:
+    app: myapp-tutorial
+spec:
+  replicas: 3
+  # number of seconds after pod is up that it's considered ready
+  minReadySeconds: 6
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # the maximum number of pods that can be created over the desired number of pods
+      maxSurge: 1
+      # the maximum number of pods that can be unavailable during the update process
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: myapp-tutorial
+      tier: app
+  template:
+    metadata:
+      labels:
+        app: myapp-tutorial
+        tier: app
+    spec:
+      volumes:
+      - name: myapp-current-files
+        persistentVolumeClaim:
+          claimName: myapp-pvc
+      containers:
+      - name: my-k8s-app
+        image: c4xp/myapp:latest
+        imagePullPolicy: Always
+        env:
+        # plaintexts
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: "myapp-configsmap"
+              key: "PORT"
+        # secrets
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "myapp-secretsmap"
+              key: "PASSWORD"
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+        volumeMounts:
+           - mountPath: "/var/www/html/app/public/img"
+             name: myapp-current-files
+      # need first to generate registry credentials
+      imagePullSecrets:
+        - name: myapp-secret-registry

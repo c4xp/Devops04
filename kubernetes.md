@@ -9,10 +9,12 @@ subTitle: Kubernetes Overview
 
 ## Namespaces
 
+![Namespaces](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/namespaces.png)
+
 In Kubernetes, namespaces provides a mechanism for isolating groups of resources within a single cluster. Names of resources need to be unique within a namespace, but not across namespaces. 
 
 ```
-kubectl create namespace my-namespace
+kubectl create namespace myapp-namespace
 kubectl get namespace # or ns
 ```
 
@@ -48,9 +50,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: my-backend-service
-  namespace: default
+  namespace: myapp-namespace
   labels:
-    app: tutorial
+    app: myapp-tutorial
 spec:
   # Optional field (default)
   type: ClusterIP
@@ -80,9 +82,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: my-database
-  namespace: default
+  namespace: myapp-namespace
   labels:
-    app: tutorial
+    app: myapp-tutorial
 spec:
   type: NodePort
   ports:
@@ -93,7 +95,7 @@ spec:
       nodePort: 30336
       # Optional: Which targetPort do pods selected by this service expose?
   selector:
-    app: tutorial
+    app: myapp-tutorial
     tier: database
 ```
 
@@ -112,13 +114,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: my-frontend-service
-  namespace: default
+  namespace: myapp-namespace
 spec:
   type: LoadBalancer
   clusterIP: 10.0.171.123
   loadBalancerIP: 123.123.123.123
   selector:
-    app: tutorial
+    app: myapp-tutorial
   ports:
   - name: http
     protocol: TCP
@@ -138,41 +140,42 @@ apiVersion: v1
 kind: Service
 metadata:
   name: my-service
-  namespace: default
+  namespace: myapp-namespace
   labels:
-    app: tutorial
+    app: myapp-tutorial
 spec:
   ports:
     - port: 80
   selector:
-    app: tutorial
+    app: myapp-tutorial
     tier: app
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: mktcom-ingress
-  namespace: default
+  name: my-ingress
+  namespace: myapp-namespace
 spec:
   rules:
-    - host: www.pentalog.com
+    - host: www.mysite.com
       http:
         paths:
         - backend:
-            serviceName: mktcom-service
+            serviceName: my-service
             servicePort: 80
           path: /
-    - host: pentalog.com
+    - host: mysite.com
       http:
         paths:
         - backend:
-            serviceName: mktcom-service
+            serviceName: my-service
             servicePort: 80
           path: /
   tls:
   - hosts:
-    - www.pentalog.com
-    secretName: pentalogcom
+    - www.mysite.com
+    - mysite.com
+    secretName: my-cert-cloudflare
 ```
 
 ## Deployment
@@ -181,7 +184,55 @@ spec:
 
 ## ConfigMaps
 
+ConfigMaps are objects used to store non-confidential data in key-value pairs.
+Pods can consume ConfigMaps as Environment Variables.
+
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myapp-configsmap
+  namespace: myapp-namespace
+data:
+  PORT: 8080
+```
+
+However, ConfigMaps are not designed to handle large amounts of data and are capped at 1MB.
+
+```
+kubectl describe configmap myapp-configsmap
+```
+
 ## Secrets
+
+The primary difference between these two is that while ConfigMaps are designed to store any type of non-sensitive application data, Secrets are designed to store sensitive application data such as passwords, tokens, etc.
+
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: myapp-secretsmap
+  namespace: myapp-namespace
+type: Opaque
+data:
+  PASSWORD: cGFzc3dvcmQx
+```
+
+```
+kubectl describe secret myapp-secretsmap
+```
+
+### Registry Credentials
+
+The kubernetes.io/dockerconfigjson type is designed for storing a serialized JSON for accessing a container image registry.
+
+```
+kubectl create secret docker-registry myapp-secret-registry --docker-email="santa@nort.pole" --docker-username="santaclaus" --docker-password="password1" --docker-server="https://index.docker.io/v1/"
+```
+
+```
+kubectl get secret myapp-secret-registry -o jsonpath='{.data.*}'
+```
 
 ## Persistent Volumes and Claims
 

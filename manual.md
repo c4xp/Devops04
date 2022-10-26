@@ -88,7 +88,7 @@ kubectl config view --minify
 kubectl config get-contexts
 kubectl config current-context
 kubectl config use-context <my-cluster>
-kubectl config set-context --current --namespace=<my-namespace>
+kubectl config set-context --current --namespace=<myapp-namespace>
 ```
 
 Get commands with basic output
