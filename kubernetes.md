@@ -178,10 +178,6 @@ spec:
     secretName: my-cert-cloudflare
 ```
 
-## Deployment
-
-
-
 ## ConfigMaps
 
 ConfigMaps are objects used to store non-confidential data in key-value pairs.
@@ -194,7 +190,7 @@ metadata:
   name: myapp-configsmap
   namespace: myapp-namespace
 data:
-  PORT: 8080
+  PORT: "8080"
 ```
 
 However, ConfigMaps are not designed to handle large amounts of data and are capped at 1MB.
@@ -240,3 +236,7 @@ kubectl get secret myapp-secret-registry -o jsonpath='{.data.*}'
 kubectl get storageclass # or sc
 kubectl describe storageclass <my-storage>
 ```
+
+![Questions](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/questions.png)
+
+[Deployment→](deployment.md)

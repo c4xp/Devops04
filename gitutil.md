@@ -143,13 +143,22 @@ git push -u origin your_branch
 
 ## Generate a SSH Key for use on your GIT repo
 
-Open Git Bash window
+Option1. Open Git Bash window (if installed Git from https://git-scm.com/downloads)
 
 ![Git-bash-here](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/git-bash-here.png)
+
+Option2. install OpenSsh Client from Windows Features
+
+```
+Add-WindowsCapability -Online -Name OpenSSH.Client*
+```
+
+Then you can generate a new ssh key
 
 ```
 ssh-keygen -t rsa -b 2048 -C "MyUser laptop"
 ```
+
 The result should be something like:
 ```
 Generating public/private rsa key pair.

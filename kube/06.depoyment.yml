@@ -34,6 +34,7 @@ spec:
       containers:
       - name: my-k8s-app
         image: c4xp/myapp:latest
+        # image: monachus/rancher-demo:latest
         imagePullPolicy: Always
         env:
         # plaintexts

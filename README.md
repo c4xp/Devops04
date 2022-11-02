@@ -107,12 +107,16 @@ I recommend just installing the recommended plugins first up. You can always add
 
 ![Jenkins-plugins](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/jenkins-plugins.png)
 
-Some other plugins I use:
-[Git parameter](https://plugins.jenkins.io/git-parameter)
-[AnsiColor](https://plugins.jenkins.io/ansicolor)
-[Build with Parameters](https://plugins.jenkins.io/build-with-parameters)
-[Github](https://plugins.jenkins.io/github)
-[Kubernetes Credentials](https://plugins.jenkins.io/kubernetes-credentials)
+Some plugins to install:
+- ✓ [Git parameter](https://plugins.jenkins.io/git-parameter)
+- ✓ [AnsiColor](https://plugins.jenkins.io/ansicolor)
+- ✓ [Build with Parameters](https://plugins.jenkins.io/build-with-parameters)
+- ✓ [Github](https://plugins.jenkins.io/github)
+- ✓ [Kubernetes Credentials](https://plugins.jenkins.io/kubernetes-credentials)
+
+Some plugins to remove (if not needed):
+- ✕ [SSH Build Agents](https://plugins.jenkins.io/ssh-slaves/)
+- ✕ [SSH server](https://plugins.jenkins.io/sshd/) + (Mina SSHD API :: Core, Mina SSHD API :: Common)
 
 ![Questions](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/questions.png)
 
