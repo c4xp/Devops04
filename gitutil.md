@@ -210,6 +210,6 @@ Verify that the remote URL has changed
 git remote -v
 ```
 
-![Questions](https://raw.githubusercontent.com/c4xp/Devops01/master/assets/questions.png)
+![Questions](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/questions.png)
 
 [Manual deployment→](manual.md)

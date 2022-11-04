@@ -119,6 +119,6 @@ kubectl delete -f .\kube\
 
 [Reference: Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
-![Questions](https://raw.githubusercontent.com/c4xp/Devops01/master/assets/questions.png)
+![Questions](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/questions.png)
 
 [Automatic Deployment→](jenkins.md)

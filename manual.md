@@ -145,6 +145,6 @@ and then we can delete everything
 kubectl delete -f tutorial.yml
 ```
 
-![Questions](https://raw.githubusercontent.com/c4xp/Devops01/master/assets/questions.png)
+![Questions](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/questions.png)
 
 [Kubernetes Overview→](kubernetes.md)
