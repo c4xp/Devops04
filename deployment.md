@@ -5,7 +5,7 @@ title: Devops04
 subTitle: Deployment
 ---
 
-# Deployment
+# Manual Deployment
 
 Let's recap a bit, before we make our own deployment.
 
@@ -34,6 +34,8 @@ A Deployment provides declarative updates for Pods and ReplicaSets.
 
 You describe a desired state in a Deployment, and the Deployment Controller changes the actual state to the desired state at a controlled rate. You can define Deployments to create new ReplicaSets, or to remove existing Deployments and adopt all their resources with new Deployments.
 
+We have our own 06.deployment.yml file
+
 ```
 apiVersion: apps/v1
 kind: Deployment
@@ -50,6 +52,22 @@ spec:
             protocol: TCP
 ```
 
+Let's apply everything manually to our own local cluster
+
+```
+cd kube
+kubectl apply -f .
+
+configmap/myapp-configsmap created
+secret/myapp-secretsmap created
+persistentvolume/myapp-volume unchanged
+persistentvolumeclaim/myapp-pvc configured
+deployment.apps/myapp-mysql-deployment created
+service/mysql created
+deployment.apps/myapp-deployment created
+service/myapp-lb created
+```
+
 ```
 echo 'show secrets held in secrets-store'
 kubectl exec <podname> -- ls /mnt/secrets-store/
@@ -57,6 +75,21 @@ echo 'print the environment variables
 kubectl exec <podname> -- export
 echo 'or just enter in it'
 kubectl exec -it <podname> -- /bin/sh
+```
+
+## Logs
+
+Interacting with running Pods to see the logs
+```
+kubectl logs <podname>
+```
+
+## Scaling
+
+Scale a replicaset
+
+```
+kubectl scale --replicas=1 deployment/myapp-deployment
 ```
 
 ## Updating the image
@@ -88,4 +121,4 @@ kubectl delete -f .\kube\
 
 ![Questions](https://raw.githubusercontent.com/c4xp/Devops01/master/assets/questions.png)
 
-[Manual→](manual.md)
+[Automatic Deployment→](jenkins.md)
