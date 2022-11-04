@@ -211,7 +211,7 @@ metadata:
   namespace: myapp-namespace
 type: Opaque
 data:
-  PASSWORD: cGFzc3dvcmQx
+  DB_PASSWORD: cGFzc3dvcmQx
 ```
 
 ```
@@ -232,10 +232,46 @@ kubectl get secret myapp-secret-registry -o jsonpath='{.data.*}'
 
 ## Persistent Volumes and Claims
 
+Volumes allow applications to store and use data from external storage systems.
+
 ```
 kubectl get storageclass # or sc
 kubectl describe storageclass <my-storage>
 ```
+
+For this example, we will use Docker Desktop Kubernetes cluster, and we will create a hostPath Persistent Volume.
+
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: myapp-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/data"
+```
+
+The configuration file specifies that the volume is at /mnt/data on the cluster's Node. The configuration also specifies a size of 2 gibibytes
+
+```
+kubectl get pv myapp-volume
+```
+
+Of course one can see the data inside wsl docker-desktop VM.
+
+```
+wsl --distribution docker-desktop
+```
+
+\\wsl.localhost
+\\wsl$
 
 ![Questions](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/questions.png)
 

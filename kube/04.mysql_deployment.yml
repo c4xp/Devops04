@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-mysql-deployment
+  namespace: myapp-namespace
+  labels:
+    app: myapp
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: myapp
+      tier: database
+  template:
+    metadata:
+      name: mysql
+      labels:
+        app: myapp
+        tier: database
+    spec:
+      volumes:
+      - name: myapp-mysql
+        persistentVolumeClaim:
+          claimName: myapp-pvc
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        args: ["--default-authentication-plugin=mysql_native_password"]
+        env:
+        # plaintexts
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: "myapp-configsmap"
+              key: "DB_USER"
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: "myapp-configsmap"
+              key: "DB_HOST"
+        # secrets
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "myapp-secretsmap"
+              key: "DB_PASSWORD"
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "myapp-secretsmap"
+              key: "DB_PASSWORD"
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - mountPath: "/var/lib/mysql"
+          name: myapp-mysql

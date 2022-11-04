@@ -44,11 +44,11 @@ spec:
               name: "myapp-configsmap"
               key: "PORT"
         # secrets
-        - name: PASSWORD
+        - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: "myapp-secretsmap"
-              key: "PASSWORD"
+              key: "DB_PASSWORD"
         ports:
           - containerPort: 8080
             protocol: TCP

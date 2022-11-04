@@ -3,7 +3,10 @@ kind: ConfigMap
 metadata:
   # kubectl config current-context
   name: myapp-configsmap
+  # kubectl config use-context docker-desktop
   # kubectl config set-context docker-desktop --namespace=myapp-namespace
   namespace: myapp-namespace
 data:
   PORT: "8080"
+  DB_HOST: "mysql"
+  DB_USER: "user1"

@@ -69,6 +69,21 @@ kubectl set image deployment/myapp-deployment my-k8s-app=c4xp/myapp:v1.0
 kubectl rollout status deployment/myapp-deployment
 ```
 
+## Cleanup
+
+Now you can clean up the resources you created in your cluster:
+
+```
+kubectl delete service mysql
+kubectl delete deployment myapp-mysql-deployment
+```
+
+or just delete them all:
+
+```
+kubectl delete -f .\kube\
+```
+
 [Reference: Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
 ![Questions](https://raw.githubusercontent.com/c4xp/Devops01/master/assets/questions.png)

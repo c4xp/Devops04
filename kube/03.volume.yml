@@ -2,25 +2,30 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
+  # kubectl get pv
   name: myapp-volume
   labels:
     type: local
 spec:
+  storageClassName: manual
   accessModes:
     - ReadWriteMany
   capacity:
     storage: 2Gi
-  storageClassName: manual
   hostPath:
-    path: "/workspace/Devops04/tmp"
+    path: "/mnt/data"
+  persistentVolumeReclaimPolicy: Retain
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  # wsl --distribution docker-desktop
   name: myapp-pvc
 spec:
+  volumeName: myapp-volume
+  storageClassName: manual
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 2Gi
+      storage: 1Gi
