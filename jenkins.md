@@ -88,13 +88,13 @@ spec:
     app: myapp-tutorial
     tier: app
 ---
-apiVersion: networking.k8s.io/v1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: myapp-ingress
   namespace: myapp-namespace
-  #annotations:
-  #  kubernetes.io/ingress.class: "nginx"
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
   - host: myapp.10.20.30.1.sslip.io
@@ -111,6 +111,13 @@ spec:
     # kubectl create secret tls myapp-cert-tls --key myapp-cert-tls.key --cert myapp-cert-tls.crt
     secretName: myapp-cert-tls
 ```
+
+Be mindful of the Warning:
+```
+Warning: extensions/v1beta1 Ingress is deprecated in v1.14+, unavailable in v1.22+; use networking.k8s.io/v1 Ingress
+```
+
+**That's why changing kubernetes version has an impact.**
 
 Let's not forget we need a TLS secret myapp-cert-tls to store our website certificate
 
