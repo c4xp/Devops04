@@ -107,7 +107,7 @@ spec:
   tls:
   - hosts:
     - myapp.10.20.30.1.sslip.io
-    # openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes -keyout myapp-cert-tls.key -out myapp-cert-tls.crt -subj "/CN=sslip.io" -addext "subjectAltName=DNS:sslip.io"
+    # openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes -keyout myapp-cert-tls.key -out myapp-cert-tls.crt -subj "/CN=sslip.io" -addext "subjectAltName=DNS:sslip.io,DNS:myapp.10.20.30.1.sslip.io,IP:10.20.30.1"
     # kubectl create secret tls myapp-cert-tls --key myapp-cert-tls.key --cert myapp-cert-tls.crt
     secretName: myapp-cert-tls
 ```
