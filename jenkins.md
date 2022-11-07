@@ -47,7 +47,7 @@ echo "Starting Kubernetes deployment"
 
 ## A new type of Ingress
 
-A new volume in our live cluster
+A new volume claim in our live cluster
 
 ```
 apiVersion: v1
