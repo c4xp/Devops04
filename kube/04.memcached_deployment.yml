@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-memcached-deployment
+  namespace: myapp-namespace
+  labels:
+    app: myapp
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: myapp
+      tier: cache
+  template:
+    metadata:
+      labels:
+        app: myapp
+        tier: cache
+    spec:
+      containers:
+      - name: memcached
+        image: bitnami/memcached:latest
+        env:
+        - name: MEMCACHED_CACHE_SIZE
+          value: "256"
+        ports:
+          - containerPort: 11211
+            name: myapp-memcport
+            protocol: TCP

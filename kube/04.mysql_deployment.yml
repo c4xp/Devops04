@@ -19,10 +19,6 @@ spec:
         app: myapp
         tier: database
     spec:
-      volumes:
-      - name: myapp-mysql
-        persistentVolumeClaim:
-          claimName: myapp-pvc
       containers:
       - name: mysql
         image: mysql:8.0
@@ -33,7 +29,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: "myapp-configsmap"
-              key: "DB_USER"
+              key: "DB_USERNAME"
         - name: MYSQL_DATABASE
           valueFrom:
             configMapKeyRef:
@@ -53,5 +49,14 @@ spec:
         ports:
         - containerPort: 3306
         volumeMounts:
-        - mountPath: "/var/lib/mysql"
-          name: myapp-mysql
+        - name: myapp-mysql
+          mountPath: "/var/lib/mysql"
+        - name: mysql-initdb
+          mountPath: "/docker-entrypoint-initdb.d"
+      volumes:
+      - name: myapp-mysql
+        persistentVolumeClaim:
+          claimName: myapp-mysql-pvc
+      - name: mysql-initdb
+        configMap:
+          name: mysql-initdb-config

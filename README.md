@@ -1,6 +1,6 @@
 # Devops04 - Jenkins and Kubernetes
 
-[![HitCount](https://hits.dwyl.com/c4xp/Devops04.svg?style=flat)](http://hits.dwyl.com/c4xp/Devops04)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fc4xp%2FDevops04)](https://hits.seeyoufarm.com)
 [![DockerStars](https://img.shields.io/docker/stars/c4xp/myapp.svg?style=flat)](https://img.shields.io/docker/stars/c4xp/myapp)
 
 ## Introduction

@@ -2,28 +2,76 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  # kubectl get pv
-  name: myapp-volume
+  # this is for Docker-Desktop
+  name: myapp-volume1
   labels:
     type: local
 spec:
-  storageClassName: manual
+  storageClassName: manual1
   accessModes:
     - ReadWriteMany
   capacity:
-    storage: 2Gi
-  hostPath:
-    path: "/mnt/data"
+    storage: 1Gi
+  local:
+    path: "/run/desktop/mnt/host/c/mypv1"
   persistentVolumeReclaimPolicy: Retain
+  # PersistentVolume is invalid: spec.nodeAffinity: Required value: Local volume requires node affinity
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - docker-desktop
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   # wsl --distribution docker-desktop
-  name: myapp-pvc
+  name: myapp-files-pvc
+  namespace: myapp-namespace
 spec:
-  volumeName: myapp-volume
-  storageClassName: manual
+  storageClassName: manual1
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  # kubectl get pv
+  name: myapp-volume2
+  labels:
+    type: local
+spec:
+  storageClassName: manual2
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  local:
+    path: "/run/desktop/mnt/host/c/mypv2"
+  persistentVolumeReclaimPolicy: Retain
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - docker-desktop
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  # find / -type d -name "data"
+  name: myapp-mysql-pvc
+  namespace: myapp-namespace
+spec:
+  storageClassName: manual2
   accessModes:
     - ReadWriteMany
   resources:

@@ -5,7 +5,37 @@ services:
     build:
       context: ./
       args:
+      - LOCALHOST=${LOCALHOST}
       - PORT=${PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_HOST=${DB_HOST}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
     image: myapp:v1.0
     ports:
       - 80:${PORT}
+      - 443:8443
+  mysql:
+    image: mysql:8.0
+    container_name: database.myapp
+    ports:
+      - 3306:3306
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./devops/mysql-initdb.sql:/docker-entrypoint-initdb.d/mysql-initdb.sql
+    environment:
+      MYSQL_USER: $DB_USERNAME
+      MYSQL_DATABASE: $DB_DATABASE
+      MYSQL_PASSWORD: $DB_PASSWORD
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+  memcached:
+    image: bitnami/memcached:latest
+    container_name: memcached.myapp
+    ports:
+      - 11211:11211
+    environment:
+      - MEMCACHED_CACHE_SIZE=256
+volumes:
+  mysql_data:
+    driver: local

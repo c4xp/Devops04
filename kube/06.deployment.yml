@@ -27,22 +27,38 @@ spec:
         app: myapp-tutorial
         tier: app
     spec:
-      volumes:
-      - name: myapp-current-files
-        persistentVolumeClaim:
-          claimName: myapp-pvc
       containers:
       - name: my-k8s-app
-        image: c4xp/myapp:latest
+        image: c4xp/myapp:v1.3
         # image: monachus/rancher-demo:latest
         imagePullPolicy: Always
         env:
         # plaintexts
+        - name: LOCALHOST
+          valueFrom:
+            configMapKeyRef:
+              name: "myapp-configsmap"
+              key: "LOCALHOST"
         - name: PORT
           valueFrom:
             configMapKeyRef:
               name: "myapp-configsmap"
               key: "PORT"
+        - name: DB_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: "myapp-configsmap"
+              key: "DB_DATABASE"
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: "myapp-configsmap"
+              key: "DB_HOST"
+        - name: DB_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: "myapp-configsmap"
+              key: "DB_USERNAME"
         # secrets
         - name: DB_PASSWORD
           valueFrom:
@@ -52,9 +68,16 @@ spec:
         ports:
           - containerPort: 8080
             protocol: TCP
+          - containerPort: 8443
+            protocol: TCP
         volumeMounts:
-           - mountPath: "/var/www/html/app/public/img"
-             name: myapp-current-files
+          - name: myapp-current-files
+            mountPath: "/var/www/html/app/public/img"
+      volumes:
+      - name: myapp-current-files
+        persistentVolumeClaim:
+          claimName: myapp-files-pvc
       # need first to generate registry credentials
+      # kubectl create secret docker-registry myapp-secret-registry --docker-email="santa@nort.pole" --docker-username="santaclaus" --docker-password="password1" --docker-server="https://index.docker.io/v1/"
       imagePullSecrets:
         - name: myapp-secret-registry

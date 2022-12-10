@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myapp-mysql-pvc
+  namespace: myapp-namespace
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 1Gi
+  # set only if you dont have a default storage-class
+  # storageClassName: nfs-client
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myapp-files-pvc
+  namespace: myapp-namespace
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 1Gi
