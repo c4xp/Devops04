@@ -13,6 +13,8 @@ data:
   DB_DATABASE: "db1"
   DB_HOST: "mysql"
   DB_USERNAME: "user1"
+  MEMCACHED_SERVER: "memcached"
+  MEMCACHED_PORT: "11211"
 ---
 apiVersion: v1
 kind: ConfigMap

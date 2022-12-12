@@ -7,6 +7,7 @@ services:
     ports:
       - 8081:8080
     container_name: jenkins
+    restart: always
     volumes:
       - jenkins_data:/var/jenkins_home
 volumes:

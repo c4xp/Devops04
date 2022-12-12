@@ -59,6 +59,16 @@ spec:
             configMapKeyRef:
               name: "myapp-configsmap"
               key: "DB_USERNAME"
+        - name: MEMCACHED_SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: "myapp-configsmap"
+              key: "MEMCACHED_SERVER"
+        - name: MEMCACHED_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: "myapp-configsmap"
+              key: "MEMCACHED_PORT"
         # secrets
         - name: DB_PASSWORD
           valueFrom:

@@ -113,10 +113,46 @@ Some plugins to install:
 - ✓ [Build with Parameters](https://plugins.jenkins.io/build-with-parameters)
 - ✓ [Github](https://plugins.jenkins.io/github)
 - ✓ [Kubernetes Credentials](https://plugins.jenkins.io/kubernetes-credentials)
+- ✓ [Environment Script](https://plugins.jenkins.io/environment-script/)
+- ✓ [CloudBees Docker Build and Publish](https://plugins.jenkins.io/docker-build-publish/)
 
 Some plugins to remove (if not needed):
 - ✕ [SSH Build Agents](https://plugins.jenkins.io/ssh-slaves/)
 - ✕ [SSH server](https://plugins.jenkins.io/sshd/) + (Mina SSHD API :: Core, Mina SSHD API :: Common)
+
+## Docker engine inside Jenkins container
+
+Enter the container
+
+```
+docker exec -it jenkins /bin/bash
+```
+
+Get the random admin password generated
+
+```
+cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+How to install Docker engine inside Jenkins Debian container
+
+```
+apt-get update
+apt-get install ca-certificates curl gnupg lsb-release
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+apt-get updatedocker run hello-world
+apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+update-alternatives --set iptables /usr/sbin/iptables-legacy
+update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+
+service docker start
+docker run hello-world
+```
 
 ![Questions](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/questions.png)
 
