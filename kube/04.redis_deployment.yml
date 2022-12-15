@@ -12,14 +12,12 @@ spec:
     matchLabels:
       app: myapp
       tier: persistentcache
-      foo: bar
   template:
     metadata:
       name: redis
       labels:
         app: myapp
         tier: persistentcache
-        foo: bar
     spec:
       volumes:
       - name: myapp-redis
