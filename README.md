@@ -144,7 +144,7 @@ curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
   $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-apt-get updatedocker run hello-world
+apt-get update
 apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 update-alternatives --set iptables /usr/sbin/iptables-legacy
@@ -152,6 +152,13 @@ update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 
 service docker start
 docker run hello-world
+```
+
+Some investigations inside the container
+```
+docker run busybox ping -c 1 192.203.230.10
+docker run busybox nslookup google.com
+
 ```
 
 ![Questions](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/questions.png)
