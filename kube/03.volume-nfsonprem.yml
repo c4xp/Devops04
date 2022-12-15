@@ -24,3 +24,15 @@ spec:
   resources:
      requests:
        storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myapp-redis-pvc
+  namespace: myapp-namespace
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 1Gi
