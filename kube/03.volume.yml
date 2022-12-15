@@ -77,3 +77,41 @@ spec:
   resources:
     requests:
       storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  # kubectl get pv
+  name: myapp-volume3
+  labels:
+    type: local
+spec:
+  storageClassName: manual3
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  local:
+    path: "/run/desktop/mnt/host/c/mypv3"
+  persistentVolumeReclaimPolicy: Retain
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - docker-desktop
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myapp-redis-pvc
+  namespace: myapp-namespace
+spec:
+  storageClassName: manual3
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

@@ -15,6 +15,8 @@ data:
   DB_USERNAME: "user1"
   MEMCACHED_SERVER: "memcached"
   MEMCACHED_PORT: "11211"
+  REDIS_SERVER: "redis"
+  REDIS_PORT: "6379"
 ---
 apiVersion: v1
 kind: ConfigMap

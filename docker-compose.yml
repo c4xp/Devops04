@@ -11,8 +11,6 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
-      - MEMCACHED_SERVER=${MEMCACHED_SERVER}
-      - MEMCACHED_PORT=${MEMCACHED_PORT}
     image: myapp:v1.0
     ports:
       - 80:${PORT}

@@ -25,6 +25,8 @@ ENV PHP_INI_FILE="/etc/php7/php.ini" \
     MAIL_DRIVER="smtp" \
     MEMCACHED_SERVER="memcached" \
     MEMCACHED_PORT="11211" \
+    REDIS_SERVER="redis" \
+    REDIS_PORT="6379" \
     SMTPSERVER=$SMTPSERVER \
     SMTP_FROM=$SMTP_FROM \
     SMTP_PASS=$SMTP_PASS \
@@ -75,7 +77,7 @@ RUN set -ex; \
     apk add --no-cache \
     wget tzdata zip unzip openssl ca-certificates nginx tar mysql-client supervisor haveged rng-tools msmtp gmp \
     php7 php7-fpm php7-cli php7-common php7-opcache \
-    php7-bcmath php7-ctype php7-curl php7-dom php7-fileinfo php7-gd php7-gmp php7-iconv php7-intl php7-exif php7-json php7-mbstring php7-mysqli php7-openssl php7-pdo php7-pdo_mysql php7-phar php7-posix php7-session php7-memcached php7-shmop php7-simplexml php7-tokenizer php7-xml php7-xmlreader php7-xmlwriter php7-zip php7-zlib ; \
+    php7-bcmath php7-ctype php7-curl php7-dom php7-fileinfo php7-gd php7-gmp php7-iconv php7-intl php7-exif php7-json php7-mbstring php7-mysqli php7-openssl php7-pdo php7-pdo_mysql php7-phar php7-posix php7-session php7-memcached php7-redis php7-shmop php7-simplexml php7-tokenizer php7-xml php7-xmlreader php7-xmlwriter php7-zip php7-zlib ; \
     update-ca-certificates ; \
     echo -e "* * * * * /var/www/html/autorun.sh\n" >> /etc/crontabs/root ; \
     rm -rf /var/cache/apk/* ; \

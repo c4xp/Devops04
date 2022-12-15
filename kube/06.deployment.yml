@@ -69,6 +69,16 @@ spec:
             configMapKeyRef:
               name: "myapp-configsmap"
               key: "MEMCACHED_PORT"
+        - name: REDIS_SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: "myapp-configsmap"
+              key: "REDIS_SERVER"
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: "myapp-configsmap"
+              key: "REDIS_PORT"
         # secrets
         - name: DB_PASSWORD
           valueFrom:
