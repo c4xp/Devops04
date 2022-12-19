@@ -35,6 +35,8 @@ ENV PHP_INI_FILE="/etc/php7/php.ini" \
 
 # --------------------------------------------------------- Install dependancies
 RUN apk add --update --no-cache \
+        # login and passwd utilities \
+        shadow \
         # Dependancy for intl \
         icu-libs \
         libintl \
@@ -72,6 +74,7 @@ RUN apk add --update --no-cache --virtual .docker-php-global-depS \
 
 # Install packages and remove cache
 # email testing: echo -e "Subject: Test Mail\r\n\r\nThis is a test mail, please let me know if it works..!" | msmtp --debug --from noreply@domain.com -t user@mail.com
+# add nginx user to www-data group
 RUN set -ex; \
     apk update ; \
     apk add --no-cache \
@@ -81,6 +84,8 @@ RUN set -ex; \
     update-ca-certificates ; \
     echo -e "* * * * * /var/www/html/autorun.sh\n" >> /etc/crontabs/root ; \
     rm -rf /var/cache/apk/* ; \
+    usermod -u 82 www-data ; \
+    usermod -aG www-data nginx ; \
     rm -rf /tmp/* \
     ;
 
@@ -159,40 +164,38 @@ RUN sed -i -e 's~.*expose_php = .*~expose_php = Off~' ${PHP_INI_FILE} && \
     sed -i -e 's~;catch_workers_output = .*~catch_workers_output = yes~' ${PHP_FPM_CONF} && \
     sed -i -e 's~.*listen.backlog =.*~listen.backlog = 1024~' ${PHP_FPM_CONF} && \
     sed -i -e 's~.*clear_env = no~clear_env = no~' ${PHP_FPM_CONF} && \
-    sed -i -e "s~.*user =.*~user = nobody~" ${PHP_FPM_CONF} && \
-    sed -i -e "s~.*group =.*~group = nobody~" ${PHP_FPM_CONF} && \
-    sed -i -e "s~.*listen\.owner =.*~listen\.owner = nobody~" ${PHP_FPM_CONF} && \
-    sed -i -e "s~.*listen\.group =.*~listen\.group = nobody~" ${PHP_FPM_CONF} && \
+    sed -i -e "s~.*user =.*~user = www-data~" ${PHP_FPM_CONF} && \
+    sed -i -e "s~.*group =.*~group = www-data~" ${PHP_FPM_CONF} && \
+    sed -i -e "s~.*listen\.owner =.*~listen\.owner = www-data~" ${PHP_FPM_CONF} && \
+    sed -i -e "s~.*listen\.group =.*~listen\.group = www-data~" ${PHP_FPM_CONF} && \
     sed -i -e "s~.*listen\.mode =.~listen\.mode = 0660~" ${PHP_FPM_CONF} && \
     sed -i -e 's~.*listen = .*~listen = /run/php-fpm.sock~' ${PHP_FPM_CONF} && \
     printf "defaults\ndomain ${LOCALHOST}\naccount default\nhost ${SMTPSERVER}\nport ${SMTP_PORT}\nprotocol smtp\ntls on\ntls_certcheck off\ntls_starttls on\nauth on\nuser ${SMTP_USER}\npassword ${SMTP_PASS}\nfrom ${SMTP_FROM}\nlogfile /tmp/.msmtp.log\nsyslog off\n" > /etc/msmtprc && \
     sed -i -e 's~.*pm = .*~pm = ondemand~' ${PHP_FPM_CONF}
 
-# Setup permissions for nobody user
-RUN chown -R nobody.nobody /run && \
+# Setup permissions for www-data user
+RUN chown -R www-data:www-data /run && \
   openssl req -x509 -sha256 -newkey rsa:1024 -keyout /etc/ssl/certs/localhost.key -out /etc/ssl/certs/localhost.crt -days 3650 -nodes -subj '/CN=localhost' && \
   chmod 0644 /etc/ssl/certs/localhost.crt && \
   chmod 0600 /etc/ssl/certs/localhost.key && \
-  chown nobody.nobody /var/log/php7 && \
-  chown -R nobody.nobody /var/lib/nginx && \
-  chown -R nobody.nobody /var/log/nginx && \
-  mkdir -p /var/www/html/app/application/vendor && mkdir -p /var/log/supervisor && mkdir -p /var/www/vendor && mkdir -p /root/.composer/cache/files && mkdir -p /root/.composer/cache/repo && \
-  chown -R nobody.nobody /var/www && \
-  chown -R nobody:nobody /var/lib/nginx && \
-  chown nobody.nobody /var/log/supervisor
+  chown www-data:www-data /var/log/php7 && \
+  chown -R www-data:www-data /var/lib/nginx && \
+  chown -R www-data:www-data /var/log/nginx && \
+  mkdir -p /var/www/html/app/application/vendor /var/log/supervisor /var/www/vendor /root/.composer/cache/files /root/.composer/cache/repo /var/tmp/nginx/client_body && \
+  chown -R www-data:www-data /var/www && \
+  chown -R www-data:www-data /var/tmp/nginx && \
+  chown www-data:www-data /var/log/supervisor
 
 # Make the document root a volume
 WORKDIR /var/www/html
 #RUN composer install --prefer-dist --no-scripts --no-dev --no-autoloader && rm -rf /root/.composer
 
-# Switch to use a non-root user from here on
-#USER nobody
-
 # If you make the assumption that you change your codebase more often than your Composer dependencies — then your Dockerfile should run composer install before copying across your codebase. This will mean that your composer install layer will be cached even if your codebase changes. The layer will only be invalidated when you actually change your dependencies.
-COPY --chown=nobody:nobody app /var/www/html/app
+COPY --chown=www-data:www-data app /var/www/html/app
 
 #RUN composer dump-autoload --no-scripts --no-dev --optimize
 
+# Switch to use user from here on
 USER root
 
 # Expose the port nginx is reachable on
