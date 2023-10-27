@@ -37,6 +37,10 @@ Installing Docker onto a Synology NAS is the normal click click click sort of wo
 
 ### Step 1: Prepare Synology
 
+[Synology HDD compatibility](https://www.synology.com/en-global/compatibility)
+[How to Install XPEnology](https://www.youtube.com/watch?v=2oEdr5ecXNY)
+[Tinycore Redpill](https://github.com/pocopico/tinycore-redpill)
+
 The first thing to do is to enable SSH login on Diskstation. To do this, go to the “Control Panel” > “Terminal”
 
 ![Synology-ssh](https://raw.githubusercontent.com/c4xp/Devops04/master/assets/synology01-ssh.png)
